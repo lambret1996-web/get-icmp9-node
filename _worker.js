@@ -46,7 +46,7 @@ export default {
       });
     }
 
-    const uuid = params.get("62bc5cd2-5eef-4e12-b9b3-24087eff5082");
+    const uuid = params.get("uuid");
     const server = params.get("server") || "proxyip.cmliussss.net";
     const port = parseInt(params.get("port") || "443", 10);
     const servername = params.get("servername") || server;
@@ -54,31 +54,7 @@ export default {
 
     // 👇 UA 自动判断格式（format 参数仍可手动覆盖）
     const format =
-      (params.get("format") || detectFormat(request)).toLowerCase();
-
-    /* ================= 获取 API ================= */
-    let apiData = null;
-try {
-  const resp = await fetch("https://api.icmp9.com/online.php", {
-    headers: { "User-Agent": getFakeUA(request) },
-    // 删掉 cacheEverything！
-  });
-  apiData = await resp.json();
-} catch {
-  apiData = null;
-}
-
-// 兜底：如果API失败，使用内置列表
-if(!apiData || !apiData.success || !Array.isArray(apiData.countries)){
-  apiData = {
-    success:true,
-    countries:[
-      {emoji:"🇳🇱",code:"nl",name:"Netherlands"},
-      {emoji:"🇺🇸",code:"us",name:"United States"},
-    ]
-  }
-}
-
+      (params.get("format") || detectFormat(request)).
     /* ================= sing-box / nekobox ================= */
     if (format === "singbox" || format === "nekobox") {
       const outbounds = [];
