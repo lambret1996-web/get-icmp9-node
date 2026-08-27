@@ -6,7 +6,29 @@ function base64Encode(str) {
     String.fromCharCode(...new TextEncoder().encode(str))
   );
 }
+// 删除这一整段，完全不再访问 api.icmp9.com
+/*
+let apiData = null;
+try {
+  const resp = await fetch("https://api.icmp9.com/online.php", {
+    headers: { "User-Agent": getFakeUA(request) },
+    cf: { cacheTtl: 60, cacheEverything: true },
+  });
+  apiData = await resp.json();
+} catch {
+  apiData = null;
+}
+*/
 
+// 替换为你自己写死的节点数组
+const apiData = {
+  success:true,
+  countries:[
+    {emoji:"🇳🇱",code:"nl",name:"Netherlands"},
+    {emoji:"🇺🇸",code:"us",name:"United States"},
+    {emoji:"🇩🇪",code:"de",name:"Germany"},
+  ]
+};
 /**
  * 判断订阅格式（UA 自动识别）
  */
