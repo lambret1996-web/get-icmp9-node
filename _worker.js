@@ -6,29 +6,7 @@ function base64Encode(str) {
     String.fromCharCode(...new TextEncoder().encode(str))
   );
 }
-// 删除这一整段，完全不再访问 api.icmp9.com
-/*
-let apiData = null;
-try {
-  const resp = await fetch("https://api.icmp9.com/online.php", {
-    headers: { "User-Agent": getFakeUA(request) },
-    cf: { cacheTtl: 60, cacheEverything: true },
-  });
-  apiData = await resp.json();
-} catch {
-  apiData = null;
-}
-*/
 
-// 替换为你自己写死的节点数组
-const apiData = {
-  success:true,
-  countries:[
-    {emoji:"🇳🇱",code:"nl",name:"Netherlands"},
-    {emoji:"🇺🇸",code:"us",name:"United States"},
-    {emoji:"🇩🇪",code:"de",name:"Germany"},
-  ]
-};
 /**
  * 判断订阅格式（UA 自动识别）
  */
@@ -47,6 +25,19 @@ function detectFormat(request) {
   return "v2ray"; // 兜底
 }
 
+/**
+ * UA 伪装（给 API 用）
+ */
+function getFakeUA(request) {
+  const ua = request.headers.get("User-Agent") || "";
+  if (/clash|v2ray|nekobox|sing-box/i.test(ua)) return ua;
+  return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
+}
+
+export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    const params = url.searchParams;
 
     /* ================= 无 UUID：前端 ================= */
     if (!params.has("uuid")) {
@@ -56,14 +47,27 @@ function detectFormat(request) {
     }
 
     const uuid = params.get("uuid");
-    const server = params.get("server") || "proxyip.cmliussss.net";
+    const server = params.get("server") || "tunnel-na.8443.buzz";
     const port = parseInt(params.get("port") || "443", 10);
     const servername = params.get("servername") || server;
     const tls = (params.get("tls") || "true") === "true";
 
     // 👇 UA 自动判断格式（format 参数仍可手动覆盖）
     const format =
-      (params.get("format") || detectFormat(request)).
+      (params.get("format") || detectFormat(request)).toLowerCase();
+
+    /* ================= 获取 API ================= */
+    let apiData = null;
+    try {
+      const resp = await fetch("https://api.icmp9.com/online.php", {
+        headers: { "User-Agent": getFakeUA(request) },
+        cf: { cacheTtl: 60, cacheEverything: true },
+      });
+      apiData = await resp.json();
+    } catch {
+      apiData = null;
+    }
+
     /* ================= sing-box / nekobox ================= */
     if (format === "singbox" || format === "nekobox") {
       const outbounds = [];
