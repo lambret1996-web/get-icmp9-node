@@ -58,15 +58,26 @@ export default {
 
     /* ================= 获取 API ================= */
     let apiData = null;
-    try {
-      const resp = await fetch("https://api.icmp9.com/online.php", {
-        headers: { "User-Agent": getFakeUA(request) },
-        cf: { cacheTtl: 60, cacheEverything: true },
-      });
-      apiData = await resp.json();
-    } catch {
-      apiData = null;
-    }
+try {
+  const resp = await fetch("https://api.icmp9.com/online.php", {
+    headers: { "User-Agent": getFakeUA(request) },
+    // 删掉 cacheEverything！
+  });
+  apiData = await resp.json();
+} catch {
+  apiData = null;
+}
+
+// 兜底：如果API失败，使用内置列表
+if(!apiData || !apiData.success || !Array.isArray(apiData.countries)){
+  apiData = {
+    success:true,
+    countries:[
+      {emoji:"🇳🇱",code:"nl",name:"Netherlands"},
+      {emoji:"🇺🇸",code:"us",name:"United States"},
+    ]
+  }
+}
 
     /* ================= sing-box / nekobox ================= */
     if (format === "singbox" || format === "nekobox") {
