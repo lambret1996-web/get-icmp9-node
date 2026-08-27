@@ -46,8 +46,8 @@ export default {
       });
     }
 
-    const uuid = params.get("uuid");
-    const server = params.get("server") || "tunnel-na.8443.buzz";
+    const uuid = params.get("62bc5cd2-5eef-4e12-b9b3-24087eff5082");
+    const server = params.get("server") || "proxyip.cmliussss.net";
     const port = parseInt(params.get("port") || "443", 10);
     const servername = params.get("servername") || server;
     const tls = (params.get("tls") || "true") === "true";
