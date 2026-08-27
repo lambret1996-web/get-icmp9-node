@@ -56,7 +56,7 @@ export default {
     const format =
       (params.get("format") || detectFormat(request)).toLowerCase();
 
-    /* ================= 获取 API ================= */
+    /* ================= 获取 API ================= 
     let apiData = null;
     try {
       const resp = await fetch("https://api.icmp9.com/online.php", {
@@ -66,8 +66,19 @@ export default {
       apiData = await resp.json();
     } catch {
       apiData = null;
-    }
-
+    }*/
+const apiData = {
+  success:true,
+  countries:[
+    {emoji:"🇺🇸",code:"us",name:"United States"},
+    {emoji:"🇳🇱",code:"nl",name:"Netherlands"},
+    {emoji:"🇩🇪",code:"de",name:"Germany"},
+    {emoji:"🇸🇬",code:"sg",name:"Singapore"},
+    {emoji:"🇯🇵",code:"jp",name:"Japan"},
+    {emoji:"🇬🇧",code:"gb",name:"United Kingdom"},
+  ]
+};
+    
     /* ================= sing-box / nekobox ================= */
     if (format === "singbox" || format === "nekobox") {
       const outbounds = [];
