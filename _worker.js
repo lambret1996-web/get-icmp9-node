@@ -25,19 +25,6 @@ function detectFormat(request) {
   return "v2ray"; // 兜底
 }
 
-/**
- * UA 伪装（给 API 用）
- */
-function getFakeUA(request) {
-  const ua = request.headers.get("User-Agent") || "";
-  if (/clash|v2ray|nekobox|sing-box/i.test(ua)) return ua;
-  return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
-}
-
-export default {
-  async fetch(request) {
-    const url = new URL(request.url);
-    const params = url.searchParams;
 
     /* ================= 无 UUID：前端 ================= */
     if (!params.has("uuid")) {
