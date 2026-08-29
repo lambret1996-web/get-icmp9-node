@@ -196,7 +196,7 @@ const apiData = {
                 net: "ws",
                 type: "none",
                 host: servername,
-                path: `/ProxyIP.${c.code}.CMliussss1.net`,
+                path: `/ProxyIP.${c.code}.CMLiussss.net`,
                 tls: tls ? "tls" : "",
                 sni: servername,
                 alpn: "",
