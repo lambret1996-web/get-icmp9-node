@@ -220,7 +220,7 @@ function getHTML(origin) {
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ICMP9 订阅生成器</title>
+<title>Vless多国家订阅生成器</title>
 
 <style>
 :root {
@@ -431,7 +431,7 @@ footer a:hover {
   <div class="page">
     <div class="card">
       <div class="header">
-        <h1>🚀 ICMP9 订阅生成器</h1>
+        <h1>🚀Vless多国家订阅生成器</h1>
         <div class="toggle" id="themeToggle">🌙</div>
       </div>
 
