@@ -76,6 +76,7 @@ const apiData = {
     {emoji:"🇸🇬",code:"sg",name:"Singapore"},
     {emoji:"🇯🇵",code:"jp",name:"Japan"},
     {emoji:"🇬🇧",code:"gb",name:"United Kingdom"},
+    {emoji:"🇭🇰",code:"hk",name:"Hong Kong"},
   ]
 };
     
