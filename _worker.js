@@ -186,14 +186,14 @@ const apiData = {
           "vless://" +
             base64Encode(
               JSON.stringify({
-                v: "2",
+                
                 ps: `${c.emoji} ${c.code.toUpperCase()} | ${c.name}`,
                 add: server,
                 port: String(port),
                 id: uuid,
               
-                net: "ws",
-                type: "none",
+                
+            
                 host: servername,
                 path: `/ProxyIp.${c.code}.CMLiussss.net`,
                 tls: tls ? "tls" : "",
