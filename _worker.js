@@ -439,13 +439,13 @@ footer a:hover {
       <input id="uuid" placeholder="必需" />
 
       <label>Server</label>
-      <input id="server" value="tunnel-na.8443.buzz" />
+      <input id="server" value="visa.com" />
 
       <label>Port</label>
       <input id="port" value="443" />
 
       <label>Server Name (SNI)</label>
-      <input id="servername" value="tunnel-na.8443.buzz" />
+      <input id="servername" value="vpn-hk.pages.dev" />
 
       <label>订阅格式</label>
       <select id="format">
