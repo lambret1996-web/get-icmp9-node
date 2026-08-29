@@ -101,7 +101,7 @@ const apiData = {
           tags.push(tag);
 
           outbounds.push({
-            type: "vmess",
+            type: "vless",
             tag,
             server,
             server_port: port,
@@ -114,7 +114,7 @@ const apiData = {
             },
             transport: {
               type: "ws",
-              path: `proxyip/${c.code}cmliussss.net`,
+              path: `/ProxyIP.${c.code}.CMLiussss.net`,
               headers: { Host: servername },
             },
           });
@@ -151,7 +151,7 @@ const apiData = {
 
           yaml +=
 `  - name: '${name}'
-    type: vmess
+    type: vless
     server: '${server}'
     port: ${port}
     uuid: ${uuid}
@@ -161,7 +161,7 @@ const apiData = {
     servername: '${servername}'
     network: ws
     ws-opts:
-      path: 'proxyip/${c.code}cmliussss.net'
+     path: `/ProxyIP.${c.code}.CMLiussss.net`,
       headers:
         Host: '${servername}'
 `;
@@ -196,7 +196,7 @@ const apiData = {
                 net: "ws",
                 type: "none",
                 host: servername,
-                path: `/ProxyIP.${c.code}.CULiussss.net`,
+                path: `/ProxyIP.${c.code}.CMliussss.net`,
                 tls: tls ? "tls" : "",
                 sni: servername,
                 alpn: "",
