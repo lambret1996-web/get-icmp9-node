@@ -103,7 +103,7 @@ const apiData = {
             },
             transport: {
               type: "ws",
-              path: `/${c.code}`,
+              path: `proxyip/${c.code}cmliussss.net`,
               headers: { Host: servername },
             },
           });
@@ -150,7 +150,7 @@ const apiData = {
     servername: '${servername}'
     network: ws
     ws-opts:
-      path: '/${c.code}'
+      path: 'proxyip/${c.code}cmliussss.net'
       headers:
         Host: '${servername}'
 `;
@@ -185,7 +185,7 @@ const apiData = {
                 net: "ws",
                 type: "none",
                 host: servername,
-                path: `/${c.code}`,
+                path: `/proxyip.${c.code}.culiussss.net`,
                 tls: tls ? "tls" : "",
                 sni: servername,
                 alpn: "",
