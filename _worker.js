@@ -172,7 +172,7 @@ const apiData = {
     if (apiData?.success && Array.isArray(apiData.countries)) {
       for (const c of apiData.countries) {
         list.push(
-          "vmess://" +
+          "Vless://" +
             base64Encode(
               JSON.stringify({
                 v: "2",
@@ -180,8 +180,8 @@ const apiData = {
                 add: server,
                 port: String(port),
                 id: uuid,
-                aid: "0",
-                scy: "auto",
+               /* aid: "0",
+                scy: "auto",*/
                 net: "ws",
                 type: "none",
                 host: servername,
