@@ -143,28 +143,29 @@ const apiData = {
         headers: { "Content-Type": "text/yaml; charset=utf-8" },
       });
     }
-    /* ================= 默认 v2ray ================= */
-       /* ================= 默认 v2ray ================= */
-    const list = [];
-    if (apiData?.success && Array.isArray(apiData.countries)) {
-      for (const c of apiData.countries) {
-        const ps = `${c.emoji} ${c.code.toUpperCase()} | ${c.name}`;
-        const params = new URLSearchParams();
-        params.set("encryption", "none");
-        params.set("security", tls ? "tls" : "none");
-        params.set("type", "ws");
-        params.set("host", servername);
-        params.set("path", `/ProxyIP.${c.code}.CMLiussss.net`);
-        if (tls) {
-          params.set("sni", servername);
-        }
-        const link = `vless://${uuid}@${server}:${port}?${params.toString()}#${encodeURIComponent(ps)}`;
-        list.push(link);
+    /* ================= 默认 v2ray =================*/
+    function renderV2ray(uuid, server, port, servername, tls) {
+  const list = [];
+  if (apiData?.success && Array.isArray(apiData.countries)) {
+    for (const c of apiData.countries) {
+      const ps = `${c.emoji} ${c.code.toUpperCase()} | ${c.name}`;
+      const params = new URLSearchParams();
+      params.set("encryption", "none");
+      params.set("security", tls ? "tls" : "none");
+      params.set("type", "ws");
+      params.set("host", servername);
+      params.set("path", `/ProxyIP.${c.code}.CMLiussss.net`);
+      if (tls) {
+        params.set("sni", servername);
       }
+      const link = `vless://${uuid}@${server}:${port}?${params.toString()}#${encodeURIComponent(ps)}`;
+      list.push(link);
     }
-    return new Response(base64Encode(list.join("\n")), {
-      headers: { "Content-Type": "text/plain; charset=utf-8" },
-    });
+  }
+  return new Response(base64Encode(list.join("\n")), {
+    headers:{"Content-Type":"text/plain; charset=utf-8"}
+  });
+}
 /* ================= 前端 HTML ================= */
 function getHTML(origin) {
   return `<!DOCTYPE html>
