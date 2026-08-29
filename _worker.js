@@ -1,16 +1,18 @@
 /**
- * Unicode-safe Base64
+ * Unicode-safe Base64（修复 1101）
  */
 function base64Encode(str) {
   return btoa(
     String.fromCharCode(...new TextEncoder().encode(str))
   );
 }
+
 /**
  * 判断订阅格式（UA 自动识别）
  */
 function detectFormat(request) {
   const ua = (request.headers.get("User-Agent") || "").toLowerCase();
+
   if (ua.includes("nekobox") || ua.includes("sing-box")) return "singbox";
   if (ua.includes("clash")) return "clash";
   if (
@@ -19,34 +21,52 @@ function detectFormat(request) {
     ua.includes("quantumult") ||
     ua.includes("kitsunebi")
   ) return "v2ray";
-  return "v2ray";
+
+  return "v2ray"; // 兜底
 }
+
 /**
- * UA 伪装
+ * UA 伪装（给 API 用）
  */
 function getFakeUA(request) {
   const ua = request.headers.get("User-Agent") || "";
   if (/clash|v2ray|nekobox|sing-box/i.test(ua)) return ua;
   return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
 }
+
 export default {
   async fetch(request) {
     const url = new URL(request.url);
     const params = url.searchParams;
+
     /* ================= 无 UUID：前端 ================= */
     if (!params.has("uuid")) {
       return new Response(getHTML(url.origin), {
         headers: { "Content-Type": "text/html; charset=utf-8" },
       });
     }
+
     const uuid = params.get("uuid");
     const server = params.get("server") || "tunnel-na.8443.buzz";
     const port = parseInt(params.get("port") || "443", 10);
     const servername = params.get("servername") || server;
     const tls = (params.get("tls") || "true") === "true";
+
+    // 👇 UA 自动判断格式（format 参数仍可手动覆盖）
     const format =
       (params.get("format") || detectFormat(request)).toLowerCase();
 
+    /* ================= 获取 API ================= 
+    let apiData = null;
+    try {
+      const resp = await fetch("https://api.icmp9.com/online.php", {
+        headers: { "User-Agent": getFakeUA(request) },
+        cf: { cacheTtl: 60, cacheEverything: true },
+      });
+      apiData = await resp.json();
+    } catch {
+      apiData = null;
+    }*/
 const apiData = {
   success:true,
   countries:[
@@ -69,33 +89,38 @@ const apiData = {
     {emoji:"🇨🇦",code:"ca",name:"Canada"},
   ]
 };
-    
+    
     /* ================= sing-box / nekobox ================= */
     if (format === "singbox" || format === "nekobox") {
       const outbounds = [];
       const tags = [];
+
       if (apiData?.success && Array.isArray(apiData.countries)) {
         for (const c of apiData.countries) {
           const tag = `${c.emoji} ${c.code.toUpperCase()} | ${c.name}`;
           tags.push(tag);
+
           outbounds.push({
-            type: "vless",
+            type: "vmess",
             tag,
             server,
             server_port: port,
             uuid,
+            security: "auto",
+            alter_id: 0,
             tls: {
               enabled: tls,
               server_name: servername,
             },
             transport: {
               type: "ws",
-              path: `/ProxyIP.${c.code}.CMLiussss.net`,
+              path: `/${c.code}`,
               headers: { Host: servername },
             },
           });
         }
       }
+
       return new Response(
         JSON.stringify({
           log: { level: "info" },
@@ -111,61 +136,82 @@ const apiData = {
         { headers: { "Content-Type": "application/json; charset=utf-8" } }
       );
     }
+
     /* ================= Clash ================= */
     if (format === "clash") {
       let yaml = "";
       const names = ["DIRECT"];
+
       yaml += "mixed-port: 7890\nallow-lan: true\nmode: rule\nlog-level: info\n\nproxies:\n";
+
       if (apiData?.success && Array.isArray(apiData.countries)) {
         for (const c of apiData.countries) {
           const name = `${c.emoji} ${c.code.toUpperCase()} | ${c.name}`;
           names.push(name);
+
           yaml +=
 `  - name: '${name}'
-    type: vless
+    type: vmess
     server: '${server}'
     port: ${port}
     uuid: ${uuid}
+    alterId: 0
+    cipher: auto
     tls: ${tls}
     servername: '${servername}'
     network: ws
     ws-opts:
-      path: '/ProxyIP.${c.code}.CMLiussss.net'
+      path: '/${c.code}'
       headers:
         Host: '${servername}'
 `;
         }
       }
+
       yaml += "\nproxy-groups:\n  - name: '🚀 节点选择'\n    type: select\n    proxies:\n";
       for (const n of names) yaml += `      - '${n}'\n`;
       yaml += "\nrules:\n  - MATCH, 🚀 节点选择\n";
+
       return new Response(yaml, {
         headers: { "Content-Type": "text/yaml; charset=utf-8" },
       });
     }
+
     /* ================= 默认 v2ray ================= */
     const list = [];
+
     if (apiData?.success && Array.isArray(apiData.countries)) {
       for (const c of apiData.countries) {
-        const ps = `${c.emoji} ${c.code.toUpperCase()} | ${c.name}`;
-        const params = new URLSearchParams();
-        params.set("encryption", "none");
-        params.set("transport", "ws");
-        params.set("path", `/ProxyIP.${c.code}.CMLiussss.net`);
-        params.set("host", servername);
-        if (tls) {
-          params.set("tls", "tls");
-          params.set("sni", servername);
-        }
-        const link = `vless://${uuid}@${server}:${port}?${params.toString()}#${encodeURIComponent(ps)}`;
-        list.push(link);
+        list.push(
+          "vless://" +
+            base64Encode(
+              JSON.stringify({
+                v: "2",
+                ps: `${c.emoji} ${c.code.toUpperCase()} | ${c.name}`,
+                add: server,
+                port: String(port),
+                id: uuid,
+              
+                net: "ws",
+                type: "none",
+                host: servername,
+                path: `ProxyIp./${c.code}.CMLiussss.net`,
+                tls: tls ? "tls" : "",
+                sni: servername,
+                alpn: "",
+                fp: "",
+              })
+            )
+        );
       }
     }
+
     return new Response(base64Encode(list.join("\n")), {
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   },
 };
+
 /* ================= 前端 HTML ================= */
 
 function getHTML(origin) {
@@ -541,4 +587,3 @@ $('year').textContent = new Date().getFullYear();
 </body>
 </html>`;
 }
-
