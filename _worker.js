@@ -69,25 +69,14 @@ export default {
     }*/
 const apiData = {
   success:true,
-  ccountries: [
-    { emoji: "🇺🇸", code: "us", name: "United States" },
-    { emoji: "🇳🇱", code: "nl", name: "Netherlands" },
-    { emoji: "🇩🇪", code: "de", name: "Germany" },
-    { emoji: "🇸🇬", code: "sg", name: "Singapore" },
-    { emoji: "🇯🇵", code: "jp", name: "Japan" },
-    { emoji: "🇬🇧", code: "gb", name: "United Kingdom" },
-    { emoji: "🇫🇷", code: "fr", name: "France" },
-    { emoji: "🇸🇪", code: "se", name: "Sweden" },
-    { emoji: "🇫🇮", code: "fi", name: "Finland" },
-    { emoji: "🇭🇰", code: "hk", name: "Hong Kong" },
-    { emoji: "🇰🇷", code: "kr", name: "South Korea" },
-    { emoji: "🇮🇳", code: "in", name: "India" },
-    { emoji: "🇵🇱", code: "pl", name: "Poland" },
-    { emoji: "🇷🇺", code: "ru", name: "Russia" },
-    { emoji: "🇨🇭", code: "ch", name: "Switzerland" },
-    { emoji: "🇱🇻", code: "lv", name: "Latvia" },
-    { emoji: "🇨🇦", code: "ca", name: "Canada" },
-]
+  countries:[
+    {emoji:"🇺🇸",code:"us",name:"United States"},
+    {emoji:"🇳🇱",code:"nl",name:"Netherlands"},
+    {emoji:"🇩🇪",code:"de",name:"Germany"},
+    {emoji:"🇸🇬",code:"sg",name:"Singapore"},
+    {emoji:"🇯🇵",code:"jp",name:"Japan"},
+    {emoji:"🇬🇧",code:"gb",name:"United Kingdom"},
+  ]
 };
     
     /* ================= sing-box / nekobox ================= */
