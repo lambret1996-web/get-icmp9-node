@@ -214,8 +214,12 @@ const apiData = {
 };
 
 */
-const vlessLink = `vless://${uuid}@${server}:${port}?encryption=none&security=${tls ? "tls" : "none"}${tls ? `&sni=${(servername)}` : ""}&type=ws&host=${(servername)}&path=${(`/Proxyip.${c.code}.CMLiussss.net`)}#${(ps)}`;
-
+    
+  const vlessLink = `vless://${uuid}@${server}:${port}?encryption=none&security=${tls ? "tls" : "none"}${tls ? `&sni=${(servername)}` : ""}&type=ws&host=${(servername)}&path=${(`/Proxyip.${c.code}.CMLiussss.net`)}#${(ps)}`;
+   const list = [];
+   
+    if (apiData?.success && Array.isArray(apiData.countries)) {
+      for (const c of apiData.countries)
 list.push(vlessLink);
 
 return new Response(list.join("\n"), {
