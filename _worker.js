@@ -202,7 +202,7 @@ const apiData = {
       }
     }
 
-    return new Response(list.join("\n"), {
+    return new Response(base64Encode（list.join("\n")), {
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   },
