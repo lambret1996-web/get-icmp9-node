@@ -182,7 +182,7 @@ const apiData = {
           "vless://" +
             base64Encode(
               JSON.stringify({
-                v: "2",
+               /* v: "2",*/
                 ps: `${c.emoji} ${c.code.toUpperCase()} | ${c.name}`,
                 add: server,
                 port: String(port),
@@ -194,15 +194,15 @@ const apiData = {
                 path: `/Proxyip.${c.code}.CMLiussss.net`,
                 tls: tls ? "tls" : "",
                 sni: servername,
-                alpn: "",
-                fp: "",
+                alpn: "http/1.1",
+                fp: "chrome",
               })
             )
         );
       }
     }
 
-    return new Response(base64Encode(list.join("\n")), {
+    return new Response(list.join("\n"), {
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   },
