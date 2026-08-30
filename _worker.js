@@ -223,16 +223,10 @@ if (apiData?.success && Array.isArray(apiData.countries)) {
     list.push(vlessLink);
   }
 }
-// 明文输出
-return new Response(list.join("\n"), {
+
+return new Response(base64Encode(list.join("\n")), {
   headers: { "Content-Type": "text/plain; charset=utf-8" },
 });
-// 如果需要base64订阅就换成下面这行
-// return new Response(base64Encode(list.join("\n")), {
-//   headers: { "Content-Type": "text/plain; charset=utf-8" },
-// });
-
-
     
 /* ================= 前端 HTML ================= */
 
