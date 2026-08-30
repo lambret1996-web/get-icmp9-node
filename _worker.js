@@ -173,7 +173,7 @@ const apiData = {
       });
     }
 
-    /* ================= 默认 v2ray ================= 
+    /* ================= 默认 v2ray ================= */
     const list = [];
 
     if (apiData?.success && Array.isArray(apiData.countries)) {
@@ -206,32 +206,9 @@ const apiData = {
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   },
-};*/
+};
 
- /* ================= 默认 v2ray ================= */
-const list = [];
-if (apiData?.success && Array.isArray(apiData.countries)) {
-  for (const c of apiData.countries) {
-    const ps = `${c.emoji} ${c.code.toUpperCase()} | ${c.name}`;
-    let query = [];
-    query.push("encryption=none");
-    query.push("security=" + (tls ? "tls" : "none"));
-    query.push("type=ws");
-    query.push("host=" + encodeURIComponent(servername));
-    // path 不要用 encodeURIComponent，防止斜杠被转义
-    query.push("path=/Proxyip." + c.code + ".CMLiussss.net");
-    if (tls) {
-      query.push("sni=" + encodeURIComponent(servername));
-    }
-    const queryStr = query.join("&");
-    const remark = encodeURIComponent(ps);
-    const link = `vless://${uuid}@${server}:${port}?${queryStr}#${remark}`;
-    list.push(link);
-  }
-}
-return new Response(base64Encode(list.join("\n")), {
-  headers: { "Content-Type": "text/plain; charset=utf-8" },
-});
+
 /* ================= 前端 HTML ================= */
 
 function getHTML(origin) {
