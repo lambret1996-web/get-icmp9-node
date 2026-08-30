@@ -448,7 +448,7 @@ footer a:hover {
   <div class="page">
     <div class="card">
       <div class="header">
-        <h1>🚀Vless多国家订阅生成器</h1>
+        <h1>🚀 Vless多国家 订阅生成器</h1>
         <div class="toggle" id="themeToggle">🌙</div>
       </div>
 
