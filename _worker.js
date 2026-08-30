@@ -164,6 +164,9 @@ const apiData = {
         }
       }
 
+
+
+    
       yaml += "\nproxy-groups:\n  - name: '🚀 节点选择'\n    type: select\n    proxies:\n";
       for (const n of names) yaml += `      - '${n}'\n`;
       yaml += "\nrules:\n  - MATCH, 🚀 节点选择\n";
@@ -173,7 +176,9 @@ const apiData = {
       });
     }
 
-    /* ================= 默认 v2ray ================= */
+
+  
+    /* ================= 默认 v2ray ================= 
     const list = [];
 
     if (apiData?.success && Array.isArray(apiData.countries)) {
@@ -182,7 +187,7 @@ const apiData = {
           "vless://" +
             base64Encode(
               JSON.stringify({
-               /* v: "2",*/
+               v: "2",
                 ps: `${c.emoji} ${c.code.toUpperCase()} | ${c.name}`,
                 add: server,
                 port: String(port),
@@ -208,7 +213,19 @@ const apiData = {
   },
 };
 
+*/
+const vlessLink = `vless://${uuid}@${server}:${port}?encryption=none&security=${tls ? "tls" : "none"}${tls ? `&sni=${encodeURIComponent(servername)}` : ""}&type=ws&host=${encodeURIComponent(servername)}&path=${encodeURIComponent(`/Proxyip.${c.code}.CMLiussss.net`)}#${encodeURIComponent(ps)}`;
 
+list.push(vlessLink);
+
+return new Response(list.join("\n"), {
+  headers: { "Content-Type": "text/plain; charset=utf-8" },
+});    
+
+
+
+
+    
 /* ================= 前端 HTML ================= */
 
 function getHTML(origin) {
