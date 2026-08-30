@@ -215,18 +215,22 @@ const apiData = {
 
 */
     
-  const vlessLink = `vless://${uuid}@${server}:${port}?encryption=none&security=${tls ? "tls" : "none"}${tls ? `&sni=${(servername)}` : ""}&type=ws&host=${(servername)}&path=${(`/Proxyip.${c.code}.CMLiussss.net`)}#${(ps)}`;
-   const list = [];
-   
-    if (apiData?.success && Array.isArray(apiData.countries)) {
-      for (const c of apiData.countries)
-list.push(vlessLink);
-
+  const list = [];
+if (apiData?.success && Array.isArray(apiData.countries)) {
+  for (const c of apiData.countries) {
+    const ps = `${c.emoji} ${c.code.toUpperCase()} | ${c.name}`;
+    const vlessLink = `vless://${uuid}@${server}:${port}?encryption=none&security=${tls ? "tls" : "none"}${tls ? `&sni=${servername}` : ""}&type=ws&host=${servername}&path=/Proxyip.${c.code}.CMLiussss.net#${encodeURIComponent(ps)}`;
+    list.push(vlessLink);
+  }
+}
+// 明文输出
 return new Response(list.join("\n"), {
   headers: { "Content-Type": "text/plain; charset=utf-8" },
-});    
-
-
+});
+// 如果需要base64订阅就换成下面这行
+// return new Response(base64Encode(list.join("\n")), {
+//   headers: { "Content-Type": "text/plain; charset=utf-8" },
+// });
 
 
     
