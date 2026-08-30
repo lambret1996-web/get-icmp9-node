@@ -214,7 +214,7 @@ const apiData = {
 };
 
 */
-const vlessLink = `vless://${uuid}@${server}:${port}?encryption=none&security=${tls ? "tls" : "none"}${tls ? `&sni=${encodeURIComponent(servername)}` : ""}&type=ws&host=${encodeURIComponent(servername)}&path=${encodeURIComponent(`/Proxyip.${c.code}.CMLiussss.net`)}#${encodeURIComponent(ps)}`;
+const vlessLink = `vless://${uuid}@${server}:${port}?encryption=none&security=${tls ? "tls" : "none"}${tls ? `&sni=${(servername)}` : ""}&type=ws&host=${(servername)}&path=${(`/Proxyip.${c.code}.CMLiussss.net`)}#${(ps)}`;
 
 list.push(vlessLink);
 
