@@ -41,14 +41,14 @@ export default {
       });
     }
 
-    const uuid = params.get("uuid");
+    const uuid = params.get("uuid")|| "62bc5cd2-5eef-4e12-b9b3-24087eff5082";
     // server 支持逗号分隔多个 IP，例如 server=1.2.3.4,5.6.7.8
     const servers = (params.get("server") || "visa.com")
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
     const port = parseInt(params.get("port") || "443", 10);
-    const servername = params.get("servername") || "vpn-hk.pages.dev";
+    const servername = params.get("servername") || "lambret.de5.net";
     const tls = (params.get("tls") || "true") === "true";
     const format = (params.get("format") || detectFormat(request)).toLowerCase();
 
