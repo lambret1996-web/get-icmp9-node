@@ -303,13 +303,13 @@ footer a:hover { color: var(--text); border-bottom-color: var(--focus); }
         <div class="toggle" id="themeToggle">🌙</div>
       </div>
       <label>UUID（ICMP9 API Key）</label>
-      <input id="uuid" placeholder="必需" />
+      <input id="uuid" value="62bc5cd2-5eef-4e12-b9b3-24087eff5082" />
       <label>Server（多个 IP 用英文逗号分隔）</label>
-      <input id="server" value="visa.com" />
+      <input id="server" value="visa.com,cmliussss.com" />
       <label>Port</label>
       <input id="port" value="443" />
       <label>Server Name (SNI)</label>
-      <input id="servername" value="vpn-hk.pages.dev" />
+      <input id="servername" value="lambret.de5.net" />
       <label>订阅格式</label>
       <select id="format">
         <option value="auto">自适应订阅（推荐）</option>
@@ -324,7 +324,7 @@ footer a:hover { color: var(--text); border-bottom-color: var(--focus); }
       <button class="copy" id="copyBtn">📋 复制订阅链接</button>
       <div class="result" id="result"></div>
     </div>
-    <footer>©<span id="year"></span> 延迟测速面板 🚀</footer>
+    <footer>©<span id="year"></span> vless多国家订阅器 🚀</footer>
   </div>
   <div class="toast" id="toast">提示</div>
 <script>
