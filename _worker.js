@@ -195,11 +195,11 @@ export default {
             path: `/proxyip=proxyip.${c.code}.cmliussss.net`,
             sni: servername,
             alpn: "h2,http/1.1",
-            ech: “servername+sm2.doh.pub/dns-query”
+            ech: `${servername}+http://sm2.doh.pub/dns-query`,
             fp: "chrome",
           });
           list.push(
-            `vless://${uuid}@${server}:${port}?${query.toString()}${ech}#${encodeURIComponent(name)}`
+            `vless://${uuid}@${server}:${port}?${query.toString()}#${encodeURIComponent(name)}`
           );
         }
       }
