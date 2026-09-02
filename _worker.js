@@ -195,6 +195,7 @@ export default {
             path: `/proxyip=proxyip.${c.code}.cmliussss.net`,
             sni: servername,
             alpn: "h2,http/1.1",
+            ech: “servername+sm2.doh.pub/dns-query”
             fp: "chrome",
           });
           list.push(
