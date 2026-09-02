@@ -199,7 +199,7 @@ export default {
             fp: "chrome",
           });
           list.push(
-            `vless://${uuid}@${server}:${port}?${query.toString()}#${encodeURIComponent(name)}`
+            `vless://${uuid}@${server}:${port}?${query.toString()}?${ech}#${encodeURIComponent(name)}`
           );
         }
       }
