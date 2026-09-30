@@ -72,70 +72,76 @@ export default {
       ],
     };
 
-    /* ================= sing-box / nekobox ================= */
-    if (format === "singbox" || format === "nekobox") {
-      const outbounds = [];
-      const tags = [];
+    /* ================= sing-box / nekobox =================if (format === "singbox" || format === "nekobox") {
+  const outbounds = [];
+  const tags = [];
 
-      if (apiData?.success && Array.isArray(apiData.countries)) {
-        for (const c of apiData.countries) {
-          for (const server of servers) {
-            const ipTag = servers.length > 1 ? ` ${server}` : "";
-            const tag = `${c.emoji} ${c.code.toUpperCase()} | ${c.name}${ipTag}`;
-            tags.push(tag);
+  if (apiData?.success && Array.isArray(apiData.countries)) {
+    for (const c of apiData.countries) {
+      for (const server of servers) {
+        const ipTag = servers.length > 1 ? ` ${server}` : "";
+        const tag = `${c.emoji} ${c.code.toUpperCase()} | ${c.name}${ipTag}`;
+        tags.push(tag);
 
-            outbounds.push({
-              type: "vless",
-              tag,
-              server,
-              server_port: port,
-              uuid,
-              tls: {
-                enabled: tls,
-                server_name: servername,
-                utls: { enabled: true, fingerprint: "chrome" },
-              },
-              transport: {
-                type: "ws",
-                path: `/proxyip=proxyip.${c.code}.cmliussss.net`,
-                headers: { Host: servername },
-              },
-            });
-          }
-        }
-      }
-
-      return new Response(
-        JSON.stringify(
-          {
-            log: { level: "info" },
-            dns: {
-              servers: [
-                {
-                  tag: "remote",
-                  address: "https://1.1.1.1/dns-query",
-                  detour: "🚀 节点选择",
-                },
-                { tag: "local", address: "223.5.5.5", detour: "direct" },
-              ],
-              final: "remote",
-            },
-            inbounds: [],
-            outbounds: [
-              { type: "selector", tag: "🚀 节点选择", outbounds: tags },
-              ...outbounds,
-              { type: "direct", tag: "direct" },
-              { type: "block", tag: "block" },
-            ],
-            route: { final: "🚀 节点选择" },
+        outbounds.push({
+          type: "vless",
+          tag,
+          server,
+          server_port: port,
+          uuid,
+          tls: {
+            enabled: tls,
+            server_name: servername,
+            utls: { enabled: true, fingerprint: "chrome" },
           },
-          null,
-          2
-        ),
-        { headers: { "Content-Type": "application/json; charset=utf-8" } }
-      );
+          transport: {
+            type: "ws",
+            path: `/proxyip=proxyip.${c.code}.cmliussss.net`,
+            headers: { Host: servername },
+          },
+        });
+      }
     }
+  }
 
+  return new Response(
+    JSON.stringify(
+      {
+        log: { level: "info" },
+        dns: {
+          servers: [
+            {
+              tag: "remote",
+              type: "https",
+              server: "1.1.1.1",
+              server_port: 443,
+              detour: "🚀 节点选择",
+            },
+            {
+              tag: "local",
+              type: "udp",
+              server: "223.5.5.5",
+              server_port: 53,
+              detour: "direct",
+            },
+          ],
+          final: "remote",
+        },
+        inbounds: [],
+        outbounds: [
+          { type: "selector", tag: "🚀 节点选择", outbounds: tags },
+          ...outbounds,
+          { type: "direct", tag: "direct" },
+          { type: "block", tag: "block" },
+        ],
+        route: { final: "🚀 节点选择" },
+      },
+      null,
+      2
+    ),
+    { headers: { "Content-Type": "application/json; charset=utf-8" } }
+  );
+}
     /* ================= Clash（mihomo / Clash.Meta） ================= */
     if (format === "clash") {
       let yaml = "";
