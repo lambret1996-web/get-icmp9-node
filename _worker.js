@@ -170,14 +170,14 @@ export default {
         route: {
           final: "🚀 节点选择",
           default_domain_resolver: "local",
-          default_http_client: "proxy-client",
+          default_http_client: "direct-http",
           rule_set: [
             {
               tag: "geoip-cn",
               type: "remote",
               format: "binary",
               url: "https://cdn.jsdelivr.net/gh/SagerNet/sing-geoip@rule-set/geoip-cn.srs",
-              http_client: "direct-client", // 修复：显式指定下载用的 HTTP 客户端
+              http_client: "direct-http", // 修复：显式指定下载用的 HTTP 客户端
               update_interval: "7d",
             },
           ],
