@@ -74,7 +74,7 @@ export default {
 
     /* ================= sing-box / nekobox =================**/
     
- if (format === "singbox" || format === "nekobox") {
+if (format === "singbox" || format === "nekobox") {
   const outbounds = [];
   const tags = [];
 
@@ -132,6 +132,12 @@ export default {
             },
           ],
           rules: [
+            // 新增：规则集CDN域名强制走本地DNS，打断DNS循环
+            {
+              domain: ["cdn.jsdelivr.net"],
+              action: "route",
+              server: "local"
+            },
             {
               action: "evaluate",
               server: "remote",
