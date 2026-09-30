@@ -72,7 +72,9 @@ export default {
       ],
     };
 
-    /* ================= sing-box / nekobox =================if (format === "singbox" || format === "nekobox") {
+    /* ================= sing-box / nekobox =================**/
+    
+  if (format === "singbox" || format === "nekobox") {
   const outbounds = [];
   const tags = [];
 
