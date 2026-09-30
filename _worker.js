@@ -115,6 +115,14 @@ export default {
       {
         log: { level: "info" },
 
+        // 【1.14.0 新增】顶层 HTTP 客户端定义
+        http_clients: [
+          {
+            tag: "proxy-client",
+            detour: "🚀 节点选择"
+          }
+        ],
+
         dns: {
           servers: [
             {
@@ -162,15 +170,17 @@ export default {
         route: {
           final: "🚀 节点选择",
           default_domain_resolver: "local",
+
+          // 【1.14.0 新增】指定远程规则集使用的默认 HTTP 客户端
+          default_http_client: "proxy-client",
+
           rule_set: [
             {
               tag: "geoip-cn",
               type: "remote",
               format: "binary",
               url: "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
-              http_client: {
-                detour: "🚀 节点选择",
-              },
+              // 此处不再需要 download_detour，由 default_http_client 接管
               update_interval: "7d",
             },
           ],
