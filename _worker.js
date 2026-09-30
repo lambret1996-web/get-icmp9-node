@@ -107,43 +107,44 @@ export default {
   }
 
   return new Response(
-    JSON.stringify(
-      {
-        log: { level: "info" },
-        dns: {
-          servers: [
-            {
-              tag: "remote",
-              type: "https",
-              server: "1.1.1.1",
-              server_port: 443,
-              detour: "🚀 节点选择",
-            },
-            {
-              tag: "local",
-              type: "udp",
-              server: "223.5.5.5",
-              server_port: 53,
-              //detour: "direct",
-            },
-          ],
-          final: "remote",
-        },
-        inbounds: [],
-        outbounds: [
-          { type: "selector", tag: "🚀 节点选择", outbounds: tags },
-          ...outbounds,
-          { type: "direct", tag: "direct" },
-          { type: "block", tag: "block" },
+  JSON.stringify(
+    {
+      log: { level: "info" },
+      dns: {
+        servers: [
+          {
+            tag: "remote",
+            type: "https",
+            server: "1.1.1.1",
+            server_port: 443,
+            detour: "🚀 节点选择",
+          },
+          {
+            tag: "local",
+            type: "udp",
+            server: "223.5.5.5",
+            server_port: 53,
+          },
         ],
-        route: { final: "🚀 节点选择" },
+        final: "remote",
       },
-      null,
-      2
-    ),
-    { headers: { "Content-Type": "application/json; charset=utf-8" } }
-  );
-}
+      inbounds: [],
+      outbounds: [
+        { type: "selector", tag: "🚀 节点选择", outbounds: tags },
+        ...outbounds,
+        { type: "direct", tag: "direct" },
+        { type: "block", tag: "block" },
+      ],
+      route: {
+        final: "🚀 节点选择",
+        default_domain_resolver: { server: "local" },
+      },
+    },
+    null,
+    2
+  ),
+  { headers: { "Content-Type": "application/json; charset=utf-8" } }
+);
     /* ================= Clash（mihomo / Clash.Meta） ================= */
     if (format === "clash") {
       let yaml = "";
