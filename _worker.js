@@ -115,6 +115,15 @@ export default {
         JSON.stringify(
           {
             log: { level: "info" },
+            
+            // 新增：定义 HTTP 客户端，用于下载远程规则集
+            http_clients: [
+              {
+                tag: "proxy-client",
+                detour: "🚀 节点选择"
+              }
+            ],
+
             dns: {
               servers: [
                 {
@@ -159,6 +168,8 @@ export default {
             route: {
               final: "🚀 节点选择",
               default_domain_resolver: "local",
+              // 新增：指定默认的 HTTP 客户端
+              default_http_client: "proxy-client",
               rule_set: [
                 {
                   tag: "geoip-cn",
@@ -174,7 +185,7 @@ export default {
         ),
         { headers: { "Content-Type": "application/json; charset=utf-8" } }
       );
-    } 
+    }
     /* ================= Clash（mihomo / Clash.Meta） ================= */
     if (format === "clash") {
       let yaml = "";
