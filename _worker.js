@@ -115,6 +115,14 @@ if (format === "singbox" || format === "nekobox") {
       {
         log: { level: "info" },
 
+        // 【1.14.0】顶层 HTTP 客户端定义，供远程规则集下载走代理
+        http_clients: [
+          {
+            tag: "proxy-client",
+            detour: "🚀 节点选择",
+          },
+        ],
+
         dns: {
           servers: [
             {
@@ -132,19 +140,13 @@ if (format === "singbox" || format === "nekobox") {
             },
           ],
           rules: [
-            // 新增：规则集CDN域名强制走本地DNS，打断DNS循环
-            {
-              domain: ["cdn.jsdelivr.net"],
-              action: "route",
-              server: "local"
-            },
             {
               action: "evaluate",
               server: "remote",
             },
             {
               match_response: true,
-              rule_set: ["geoip-cn"],
+              rule_set: ["geoip-cn"], // 修复：数组形式
               action: "route",
               server: "local",
             },
@@ -167,46 +169,26 @@ if (format === "singbox" || format === "nekobox") {
 
         route: {
           final: "🚀 节点选择",
-          rules: [
-            {
-              ip_is_private: true,
-              outbound: "direct"
-            },
-            {
-              rule_set: "geoip-cn",
-              outbound: "direct"
-            },
-            {
-              rule_set: "geoip-us",
-              rule_set_ip_cidr_match_source: true,
-              outbound: "block"
-            }
-          ],
+          default_domain_resolver: "local",
+          default_http_client: "proxy-client",
           rule_set: [
             {
               tag: "geoip-cn",
               type: "remote",
               format: "binary",
-              url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
-              download_detour: "direct",
-              update_interval: "7d"
+              url: "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
+              http_client: "proxy-client", // 修复：显式指定下载用的 HTTP 客户端
+              update_interval: "7d",
             },
-            {
-              tag: "geoip-us",
-              type: "remote",
-              format: "binary",
-              url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/us.srs",
-              download_detour: "direct",
-              update_interval: "7d"
-            }
-          ]
+          ],
         },
 
+        // 修复：启用缓存文件，远程规则集下载后持久化，避免启动时规则集缺失
         experimental: {
           cache_file: {
-            enabled: true
-          }
-        }
+            enabled: true,
+          },
+        },
       },
       null,
       2
