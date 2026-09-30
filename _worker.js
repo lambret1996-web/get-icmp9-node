@@ -74,77 +74,107 @@ export default {
 
     /* ================= sing-box / nekobox =================**/
     
-  if (format === "singbox" || format === "nekobox") {
-  const outbounds = [];
-  const tags = [];
+ if (format === "singbox" || format === "nekobox") {
+      const outbounds = [];
+      const tags = [];
 
-  if (apiData?.success && Array.isArray(apiData.countries)) {
-    for (const c of apiData.countries) {
-      for (const server of servers) {
-        const ipTag = servers.length > 1 ? ` ${server}` : "";
-        const tag = `${c.emoji} ${c.code.toUpperCase()} | ${c.name}${ipTag}`;
-        tags.push(tag);
+      if (apiData?.success && Array.isArray(apiData.countries)) {
+        for (const c of apiData.countries) {
+          for (const server of servers) {
+            const ipTag = servers.length > 1 ? ` ${server}` : "";
+            const tag = `${c.emoji} ${c.code.toUpperCase()} | ${c.name}${ipTag}`;
+            tags.push(tag);
 
-        outbounds.push({
-          type: "vless",
-          tag,
-          server,
-          server_port: port,
-          uuid,
-          tls: {
-            enabled: tls,
-            server_name: servername,
-            utls: { enabled: true, fingerprint: "chrome" },
-          },
-          transport: {
-            type: "ws",
-            path: `/proxyip=proxyip.${c.code}.cmliussss.net`,
-            headers: { Host: servername },
-          },
-        });
+            outbounds.push({
+              type: "vless",
+              tag,
+              server,
+              server_port: port,
+              uuid,
+              tls: {
+                enabled: tls,
+                server_name: servername,
+                utls: { enabled: true, fingerprint: "chrome" },
+              },
+              transport: {
+                type: "ws",
+                path: `/proxyip=proxyip.${c.code}.cmliussss.net`,
+                headers: { Host: servername },
+              },
+            });
+          }
+        }
       }
-    }
-  }
 
-  return new Response(
-  JSON.stringify(
-    {
-      log: { level: "info" },
-      dns: {
-        servers: [
+      // 防止没有任何节点时选择器为空导致报错
+      if (tags.length === 0) {
+        tags.push("direct");
+      }
+
+      return new Response(
+        JSON.stringify(
           {
-            tag: "remote",
-            type: "https",
-            server: "1.1.1.1",
-            server_port: 443,
-            detour: "🚀 节点选择",
+            log: { level: "info" },
+            dns: {
+              servers: [
+                {
+                  tag: "remote",
+                  type: "https",
+                  server: "1.1.1.1",
+                  server_port: 443,
+                  detour: "🚀 节点选择",
+                },
+                {
+                  tag: "local",
+                  type: "udp",
+                  server: "223.5.5.5",
+                  server_port: 53,
+                },
+              ],
+              rules: [
+                {
+                  action: "evaluate",
+                  server: "remote",
+                },
+                {
+                  match_response: true,
+                  rule_set: "geoip-cn",
+                  action: "route",
+                  server: "local",
+                },
+                {
+                  action: "route",
+                  server: "remote",
+                },
+              ],
+              final: "remote",
+            },
+            inbounds: [],
+            outbounds: [
+              { type: "selector", tag: "🚀 节点选择", outbounds: tags },
+              ...outbounds,
+              { type: "direct", tag: "direct" },
+              { type: "block", tag: "block" },
+            ],
+            route: {
+              final: "🚀 节点选择",
+              default_domain_resolver: "local",
+              rule_set: [
+                {
+                  tag: "geoip-cn",
+                  type: "remote",
+                  format: "binary",
+                  url: "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
+                },
+              ],
+            },
           },
-          {
-            tag: "local",
-            type: "udp",
-            server: "223.5.5.5",
-            server_port: 53,
-          },
-        ],
-        final: "remote",
-      },
-      inbounds: [],
-      outbounds: [
-        { type: "selector", tag: "🚀 节点选择", outbounds: tags },
-        ...outbounds,
-        { type: "direct", tag: "direct" },
-        { type: "block", tag: "block" },
-      ],
-      route: {
-        final: "🚀 节点选择",
-        default_domain_resolver: { server: "local" },
-      },
-    },
-    null,
-    2
-  ),
-  { headers: { "Content-Type": "application/json; charset=utf-8" } }
-);
+          null,
+          2
+        ),
+        { headers: { "Content-Type": "application/json; charset=utf-8" } }
+      );
+    } 
     /* ================= Clash（mihomo / Clash.Meta） ================= */
     if (format === "clash") {
       let yaml = "";
