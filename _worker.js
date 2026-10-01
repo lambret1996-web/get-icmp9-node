@@ -110,13 +110,32 @@ if (format === "singbox" || format === "nekobox") {
     tags.push("direct");
   }
 
+  // ================= 核心修复 =================
+  // 1. 先定义被引用的自动选择组（使用 urltest 自动测速）
+  const autoSelectGroup = {
+    type: "urltest",
+    tag: "♻️ 自动选择", // 这里的 Tag 名称
+    outbounds: [...tags],
+    url: "http://www.gstatic.com/generate_204",
+    interval: "10m",
+    tolerance: 50,
+  };
+
+  // 2. 再定义节点选择组，引用上面的“♻️ 自动选择”（必须一字不差）
+  const nodeSelectGroup = {
+    type: "selector",
+    tag: "🚀 节点选择",
+    outbounds: ["♻️ 自动选择", ...tags], // 这里的字符串必须和上方定义的 tag 完全一致
+  };
+  // ============================================
+
   const config = {
     log: { level: "info" },
 
     http_clients: [
       {
         tag: "proxy-client",
-        detour: "🚀 节点选择",
+        detour: "🚀 节点选择", // 必须和策略组的 tag 一致
       },
     ],
 
@@ -131,14 +150,14 @@ if (format === "singbox" || format === "nekobox") {
         },
         {
           tag: "local",
-          type: "ud选择p",
+          type: "udp",
           server: "223.5.5.5",
           server_port: 53,
         },
       ],
       rules: [
         {
-组          action: "evaluate",
+          action: "evaluate",
           server: "remote",
         },
         {
@@ -166,24 +185,11 @@ if (format === "singbox" || format === "nekobox") {
       },
     ],
 
-    // ========== 核心改动在这里 ==========
+    // 3. 在 outbounds 中优先放入被引用的组，然后是引用它的组
     outbounds: [
-      // 🚀 节点选择：手动。把“自动选择”放在首位，使其成为默认出口
-      { 
-        type: "selector", 
-        tag: "🚀 节点选择", 
-        outbounds: ["♻️ 自动选择", ...tags] 
-      },
-      // ♻️ 自动选择：URLTest 自动测速，每 10 分钟测一次，自动切换到延迟最低的节点
-      {
-        type: "urltest",
-        tag: "♻️ 自动选择",
-        outbounds: [...tags],
-        url: "http://www.gstatic.com/generate_204",
-        interval: "10m",
-        tolerance: 50,
-      },
-      ...outbounds,
+      autoSelectGroup, // 先放自动选择
+      nodeSelectGroup, // 再放节点选择
+      ...outbounds,    // 最后放真实的节点
       { type: "direct", tag: "direct" },
       { type: "block", tag: "block" },
     ],
@@ -194,12 +200,10 @@ if (format === "singbox" || format === "nekobox") {
       default_http_client: "proxy-client",
 
       rules: [
-        // 阻止 QUIC，强制 TikTok 等应用使用 TCP，避免 UDP 不通导致无网
         {
           protocol: "quic",
           outbound: "block",
         },
-        // 中国 IP 直连
         {
           rule_set: ["geoip-cn"],
           outbound: "direct",
