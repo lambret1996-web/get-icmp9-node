@@ -110,10 +110,10 @@ if (format === "singbox" || format === "nekobox") {
     tags.push("direct");
   }
 
-  // 构建最终配置对象
   const config = {
     log: { level: "info" },
 
+    // 顶层 HTTP 客户端，供远程规则集下载走代理
     http_clients: [
       {
         tag: "proxy-client",
@@ -178,6 +178,15 @@ if (format === "singbox" || format === "nekobox") {
       final: "🚀 节点选择",
       default_domain_resolver: "local",
       default_http_client: "proxy-client",
+
+      // 新增：引用 geoip-cn 规则集，中国 IP 直连
+      rules: [
+        {
+          rule_set: ["geoip-cn"],
+          outbound: "direct",
+        },
+      ],
+
       rule_set: [
         {
           tag: "geoip-cn",
@@ -197,12 +206,9 @@ if (format === "singbox" || format === "nekobox") {
     },
   };
 
-  return new Response(
-    JSON.stringify(config, null, 2),
-    {
-      headers: { "Content-Type": "application/json; charset=utf-8" },
-    }
-  );
+  return new Response(JSON.stringify(config, null, 2), {
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
 }
     /* ================= Clash（mihomo / Clash.Meta） ================= */
     if (format === "clash") {
