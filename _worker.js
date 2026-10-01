@@ -56,18 +56,20 @@ export default {
     const apiData = {
       success: true,
       countries: [
+        { emoji: "🇸🇬", code: "SG", name: "新加坡" },
+        { emoji: "🇯🇵", code: "JP", name: "日本" },
+        { emoji: "🇭🇰", code: "HK", name: "香港" },
+        { emoji: "🇰🇷", code: "KR", name: "韩国" },
+        { emoji: "🇱🇻", code: "LV", name: "拉脱维亚" },
         { emoji: "🇺🇸", code: "US", name: "美国" },
         { emoji: "🇳🇱", code: "NL", name: "荷兰" },
         { emoji: "🇩🇪", code: "DE", name: "德国" },
-        { emoji: "🇸🇬", code: "SG", name: "新加坡" },
-        { emoji: "🇯🇵", code: "JP", name: "日本" },
+      
         { emoji: "🇬🇧", code: "GB", name: "英国" },
         { emoji: "🇫🇷", code: "FR", name: "法国" },
         { emoji: "🇸🇪", code: "SE", name: "瑞典" },
         { emoji: "🇫🇮", code: "FI", name: "芬兰" },
-        { emoji: "🇭🇰", code: "HK", name: "香港" },
-        { emoji: "🇰🇷", code: "KR", name: "韩国" },
-        { emoji: "🇱🇻", code: "LV", name: "拉脱维亚" },
+        
         { emoji: "🇨🇦", code: "CA", name: "加拿大" },
       ],
     };
@@ -113,15 +115,22 @@ if (format === "singbox" || format === "nekobox") {
   const config = {
     log: { level: "info" },
 
-    // 去掉复杂的 http_clients，规则集直接用本地直连下载，防止死锁
+    // 顶层 HTTP 客户端，供远程规则集下载走代理
+    http_clients: [
+      {
+        tag: "proxy-client",
+        detour: "🚀 节点选择",
+      },
+    ],
+
     dns: {
       servers: [
         {
           tag: "remote",
           type: "https",
-          server: "1.1.1.1",
+          server: "8.8.8.8",
           server_port: 443,
-          // ❌ 删除了 detour: "🚀 节点选择"，DNS 不再强依赖代理
+          detour: "🚀 节点选择",
         },
         {
           tag: "local",
@@ -156,27 +165,13 @@ if (format === "singbox" || format === "nekobox") {
         address: ["172.19.0.1/30", "fdfe:dcba:9876::1/126"],
         auto_route: true,
         strict_route: true,
-        stack: "gvisor", // 换回 gvisor，兼容性最好
+        stack: "gvisor",
       },
     ],
 
     outbounds: [
-      // 先放真实节点
+      { type: "selector", tag: "🚀 节点选择", outbounds: tags },
       ...outbounds,
-      // 策略组
-      {
-        type: "urltest",
-        tag: "♻️ 自动选择",
-        outbounds: [...tags],
-        url: "http://www.gstatic.com/generate_204",
-        interval: "10m",
-        tolerance: 50,
-      },
-      {
-        type: "selector",
-        tag: "🚀 节点选择",
-        outbounds: ["♻️ 自动选择", ...tags],
-      },
       { type: "direct", tag: "direct" },
       { type: "block", tag: "block" },
     ],
@@ -184,12 +179,10 @@ if (format === "singbox" || format === "nekobox") {
     route: {
       final: "🚀 节点选择",
       default_domain_resolver: "local",
+      default_http_client: "proxy-client",
 
+      // 新增：引用 geoip-cn 规则集，中国 IP 直连
       rules: [
-        {
-          protocol: "quic",
-          outbound: "block",
-        },
         {
           rule_set: ["geoip-cn"],
           outbound: "direct",
@@ -202,7 +195,7 @@ if (format === "singbox" || format === "nekobox") {
           type: "remote",
           format: "binary",
           url: "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
-          // ❌ 删除了 http_client: "proxy-client"，改为直连下载规则集
+          http_client: "proxy-client",
           update_interval: "7d",
         },
       ],
