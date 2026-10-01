@@ -110,35 +110,10 @@ if (format === "singbox" || format === "nekobox") {
     tags.push("direct");
   }
 
-  // ================= 核心修复 =================
-  // 1. 先定义被引用的自动选择组（使用 urltest 自动测速）
-  const autoSelectGroup = {
-    type: "urltest",
-    tag: "♻️ 自动选择", // 这里的 Tag 名称
-    outbounds: [...tags],
-    url: "http://www.gstatic.com/generate_204",
-    interval: "10m",
-    tolerance: 50,
-  };
-
-  // 2. 再定义节点选择组，引用上面的“♻️ 自动选择”（必须一字不差）
-  const nodeSelectGroup = {
-    type: "selector",
-    tag: "🚀 节点选择",
-    outbounds: ["♻️ 自动选择", ...tags], // 这里的字符串必须和上方定义的 tag 完全一致
-  };
-  // ============================================
-
   const config = {
     log: { level: "info" },
 
-    http_clients: [
-      {
-        tag: "proxy-client",
-        detour: "🚀 节点选择", // 必须和策略组的 tag 一致
-      },
-    ],
-
+    // 去掉复杂的 http_clients，规则集直接用本地直连下载，防止死锁
     dns: {
       servers: [
         {
@@ -146,7 +121,7 @@ if (format === "singbox" || format === "nekobox") {
           type: "https",
           server: "1.1.1.1",
           server_port: 443,
-          detour: "🚀 节点选择",
+          // ❌ 删除了 detour: "🚀 节点选择"，DNS 不再强依赖代理
         },
         {
           tag: "local",
@@ -181,15 +156,27 @@ if (format === "singbox" || format === "nekobox") {
         address: ["172.19.0.1/30", "fdfe:dcba:9876::1/126"],
         auto_route: true,
         strict_route: true,
-        stack: "mixed",
+        stack: "gvisor", // 换回 gvisor，兼容性最好
       },
     ],
 
-    // 3. 在 outbounds 中优先放入被引用的组，然后是引用它的组
     outbounds: [
-      autoSelectGroup, // 先放自动选择
-      nodeSelectGroup, // 再放节点选择
-      ...outbounds,    // 最后放真实的节点
+      // 先放真实节点
+      ...outbounds,
+      // 策略组
+      {
+        type: "urltest",
+        tag: "♻️ 自动选择",
+        outbounds: [...tags],
+        url: "http://www.gstatic.com/generate_204",
+        interval: "10m",
+        tolerance: 50,
+      },
+      {
+        type: "selector",
+        tag: "🚀 节点选择",
+        outbounds: ["♻️ 自动选择", ...tags],
+      },
       { type: "direct", tag: "direct" },
       { type: "block", tag: "block" },
     ],
@@ -197,7 +184,6 @@ if (format === "singbox" || format === "nekobox") {
     route: {
       final: "🚀 节点选择",
       default_domain_resolver: "local",
-      default_http_client: "proxy-client",
 
       rules: [
         {
@@ -216,7 +202,7 @@ if (format === "singbox" || format === "nekobox") {
           type: "remote",
           format: "binary",
           url: "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
-          http_client: "proxy-client",
+          // ❌ 删除了 http_client: "proxy-client"，改为直连下载规则集
           update_interval: "7d",
         },
       ],
