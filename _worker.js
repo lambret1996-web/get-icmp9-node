@@ -110,103 +110,100 @@ if (format === "singbox" || format === "nekobox") {
     tags.push("direct");
   }
 
-  return new Response(
-  JSON.stringify(
-    {
-      log: { level: "info" },
+  // 构建最终配置对象
+  const config = {
+    log: { level: "info" },
 
-      // 【1.14.0】顶层 HTTP 客户端定义，供远程规则集下载走代理
-      http_clients: [
+    http_clients: [
+      {
+        tag: "proxy-client",
+        detour: "🚀 节点选择",
+      },
+    ],
+
+    dns: {
+      servers: [
         {
-          tag: "proxy-client",
+          tag: "remote",
+          type: "https",
+          server: "1.1.1.1",
+          server_port: 443,
           detour: "🚀 节点选择",
         },
-      ],
-
-      dns: {
-        servers: [
-          {
-            tag: "remote",
-            type: "https",
-            server: "1.1.1.1",
-            server_port: 443,
-            detour: "🚀 节点选择",
-          },
-          {
-            tag: "local",
-            type: "udp",
-            server: "223.5.5.5",
-            server_port: 53,
-          },
-        ],
-        rules: [
-          {
-            action: "evaluate",
-            server: "remote",
-          },
-          {
-            match_response: true,
-            rule_set: ["geoip-cn"],
-            action: "route",
-            server: "local",
-          },
-          {
-            action: "route",
-            server: "remote",
-          },
-        ],
-        final: "remote",
-      },
-
-      // 修复：iOS 必须至少包含一个 TUN 入站，空数组会导致启动失败
-      inbounds: [
         {
-          type: "tun",
-          tag: "tun-in",
-          address: ["172.19.0.1/30", "fdfe:dcba:9876::1/126"],
-          auto_route: true,
-          strict_route: true,
-          stack: "gvisor",
+          tag: "local",
+          type: "udp",
+          server: "223.5.5.5",
+          server_port: 53,
         },
       ],
-
-      outbounds: [
-        { type: "selector", tag: "🚀 节点选择", outbounds: tags },
-        ...outbounds,
-        { type: "direct", tag: "direct" },
-        { type: "block", tag: "block" },
+      rules: [
+        {
+          action: "evaluate",
+          server: "remote",
+        },
+        {
+          match_response: true,
+          rule_set: ["geoip-cn"],
+          action: "route",
+          server: "local",
+        },
+        {
+          action: "route",
+          server: "remote",
+        },
       ],
+      final: "remote",
+    },
 
-      route: {
-        final: "🚀 节点选择",
-        default_domain_resolver: "local",
-        default_http_client: "proxy-client",
-        rule_set: [
-          {
-            tag: "geoip-cn",
-            type: "remote",
-            format: "binary",
-            url: "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
-            http_client: "proxy-client",
-            update_interval: "7d",
-          },
-        ],
+    inbounds: [
+      {
+        type: "tun",
+        tag: "tun-in",
+        address: ["172.19.0.1/30", "fdfe:dcba:9876::1/126"],
+        auto_route: true,
+        strict_route: true,
+        stack: "gvisor",
       },
+    ],
 
-      experimental: {
-        cache_file: {
-          enabled: true,
+    outbounds: [
+      { type: "selector", tag: "🚀 节点选择", outbounds: tags },
+      ...outbounds,
+      { type: "direct", tag: "direct" },
+      { type: "block", tag: "block" },
+    ],
+
+    route: {
+      final: "🚀 节点选择",
+      default_domain_resolver: "local",
+      default_http_client: "proxy-client",
+      rule_set: [
+        {
+          tag: "geoip-cn",
+          type: "remote",
+          format: "binary",
+          url: "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
+          http_client: "proxy-client",
+          update_interval: "7d",
         },
+      ],
+    },
+
+    experimental: {
+      cache_file: {
+        enabled: true,
       },
     },
-    null,
-    2
-  ),
-  {
-    headers: { "Content-Type": "application/json; charset=utf-8" },
-  }
-);
-      
+  };
+
+  return new Response(
+    JSON.stringify(config, null, 2),
+    {
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+    }
+  );
+}
     /* ================= Clash（mihomo / Clash.Meta） ================= */
     if (format === "clash") {
       let yaml = "";
