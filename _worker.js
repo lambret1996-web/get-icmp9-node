@@ -113,7 +113,6 @@ if (format === "singbox" || format === "nekobox") {
   const config = {
     log: { level: "info" },
 
-    // 顶层 HTTP 客户端，供远程规则集下载走代理
     http_clients: [
       {
         tag: "proxy-client",
@@ -163,7 +162,7 @@ if (format === "singbox" || format === "nekobox") {
         address: ["172.19.0.1/30", "fdfe:dcba:9876::1/126"],
         auto_route: true,
         strict_route: true,
-        stack: "gvisor",
+        stack: "mixed", // 改为 mixed，改善 UDP 兼容性
       },
     ],
 
@@ -179,8 +178,13 @@ if (format === "singbox" || format === "nekobox") {
       default_domain_resolver: "local",
       default_http_client: "proxy-client",
 
-      // 新增：引用 geoip-cn 规则集，中国 IP 直连
       rules: [
+        // 阻止 QUIC，强制 TikTok 等应用使用 TCP，避免 UDP 不通导致无网
+        {
+          protocol: "quic",
+          outbound: "block",
+        },
+        // 中国 IP 直连
         {
           rule_set: ["geoip-cn"],
           outbound: "direct",
