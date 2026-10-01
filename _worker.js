@@ -131,14 +131,14 @@ if (format === "singbox" || format === "nekobox") {
         },
         {
           tag: "local",
-          type: "udp",
+          type: "ud选择p",
           server: "223.5.5.5",
           server_port: 53,
         },
       ],
       rules: [
         {
-          action: "evaluate",
+组          action: "evaluate",
           server: "remote",
         },
         {
@@ -162,12 +162,27 @@ if (format === "singbox" || format === "nekobox") {
         address: ["172.19.0.1/30", "fdfe:dcba:9876::1/126"],
         auto_route: true,
         strict_route: true,
-        stack: "mixed", // 改为 mixed，改善 UDP 兼容性
+        stack: "mixed",
       },
     ],
 
+    // ========== 核心改动在这里 ==========
     outbounds: [
-      { type: "selector", tag: "🚀 节点选择", outbounds: tags },
+      // 🚀 节点选择：手动。把“自动选择”放在首位，使其成为默认出口
+      { 
+        type: "selector", 
+        tag: "🚀 节点选择", 
+        outbounds: ["♻️ 自动选择", ...tags] 
+      },
+      // ♻️ 自动选择：URLTest 自动测速，每 10 分钟测一次，自动切换到延迟最低的节点
+      {
+        type: "urltest",
+        tag: "♻️ 自动选择",
+        outbounds: [...tags],
+        url: "http://www.gstatic.com/generate_204",
+        interval: "10m",
+        tolerance: 50,
+      },
       ...outbounds,
       { type: "direct", tag: "direct" },
       { type: "block", tag: "block" },
